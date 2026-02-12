@@ -1,0 +1,14 @@
+{
+  "name": "sitezakataw",
+  "version": "1.0.0",
+  "description": "Coalition website",
+  "main": "server/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "cd server && npm install && npm start",
+    "dev": "cd server && npm run dev"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}

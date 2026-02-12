@@ -1,1 +1,2 @@
-web: cd server && npm install && npm start
+# Deprecated - use railway.toml instead
+
