@@ -1,5 +1,2 @@
-{
-  "build": {
-    "builder": "nixpacks"
-  }
-}
+# Removed - use Dockerfile instead
+
