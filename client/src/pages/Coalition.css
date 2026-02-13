@@ -19,6 +19,62 @@
   background-clip: text;
 }
 
+/* ========== STATUS BANNERS ========== */
+.status-banner {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  border-left: 4px solid;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.status-banner svg {
+  flex-shrink: 0;
+  min-width: 24px;
+}
+
+.status-banner strong {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.status-banner p {
+  margin: 0;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.status-pending {
+  background: rgba(245, 158, 11, 0.1);
+  border-left-color: #f59e0b;
+  color: #fed7aa;
+}
+
+.status-approved {
+  background: rgba(16, 185, 129, 0.1);
+  border-left-color: #10b981;
+  color: #a7f3d0;
+}
+
+.status-rejected {
+  background: rgba(239, 68, 68, 0.1);
+  border-left-color: #ef4444;
+  color: #fecaca;
+}
+
 .progress-bar {
   height: 8px;
   background: rgba(30, 41, 59, 0.5);
@@ -286,6 +342,146 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+/* ========== ANSWER STATUS STYLES ========== */
+.answer-status-banner {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid;
+}
+
+.answer-status-banner.status-pending {
+  background: rgba(245, 158, 11, 0.1);
+  border-left-color: #f59e0b;
+}
+
+.answer-status-banner.status-approved {
+  background: rgba(16, 185, 129, 0.1);
+  border-left-color: #10b981;
+}
+
+.answer-status-banner.status-rejected {
+  background: rgba(239, 68, 68, 0.1);
+  border-left-color: #ef4444;
+}
+
+.status-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.status-icon {
+  font-size: 1.25rem;
+}
+
+.status-text {
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.comment-section {
+  background: rgba(56, 189, 248, 0.1);
+  border-left: 3px solid #38bdf8;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-top: 0.75rem;
+}
+
+.comment-section strong {
+  color: #38bdf8;
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.comment-text {
+  color: #cbd5e1;
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* ========== SUBMIT TICKET BUTTON ========== */
+.submit-ticket-btn {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #c084fc 0%, #38bdf8 100%);
+  color: #0a0e27;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 30px rgba(192, 132, 252, 0.4);
+}
+
+.submit-ticket-btn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 0 40px rgba(192, 132, 252, 0.8), 0 0 20px rgba(56, 189, 248, 0.6);
+}
+
+.submit-ticket-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ========== SUCCESS BANNER ========== */
+.success-banner {
+  text-align: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+  border: 2px solid #10b981;
+  border-radius: 12px;
+  margin-top: 2rem;
+  animation: slideUp 0.5s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.success-banner h3 {
+  color: #10b981;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.success-banner p {
+  color: #cbd5e1;
+  margin-bottom: 1.5rem;
+}
+
+.discord-link {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+}
+
+.discord-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(16, 185, 129, 0.8);
 }
 
 @media (max-width: 768px) {

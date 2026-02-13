@@ -11,8 +11,10 @@ router.get('/', async (req, res) => {
     const questions = await Question.find({ isActive: true })
       .populate('createdBy', 'username')
       .sort({ order: 1 });
+    console.log('📋 Fetched', questions.length, 'active questions');
     res.json(questions);
   } catch (error) {
+    console.error('❌ Error fetching questions:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -20,9 +22,12 @@ router.get('/', async (req, res) => {
 // Get single question with answers (admin only)
 router.get('/:id', verifyToken, verifyAdmin, async (req, res) => {
   try {
+    console.log('📝 Admin requesting question:', req.params.id);
+    
     const question = await Question.findById(req.params.id).populate('createdBy', 'username');
     
     if (!question) {
+      console.log('❌ Question not found:', req.params.id);
       return res.status(404).json({ message: 'Question not found' });
     }
 
@@ -31,12 +36,19 @@ router.get('/:id', verifyToken, verifyAdmin, async (req, res) => {
       .populate('userId', 'username email')
       .sort({ createdAt: -1 });
 
+    console.log('✅ Found', answers.length, 'answers for question:', question.title);
+    
+    // Log first answer for debugging
+    if (answers.length > 0) {
+      console.log('   - First answer:', answers[0].userId.username, '-', answers[0].answer);
+    }
+
     res.json({
       question,
       answers,
     });
   } catch (error) {
-    console.error('Error fetching question with answers:', error);
+    console.error('❌ Error fetching question with answers:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });

@@ -10,33 +10,73 @@ const Coalition = () => {
   const [loading, setLoading] = useState(true);
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState({});
+  const [allAnswered, setAllAnswered] = useState(false);
+  const [canSubmitTicket, setCanSubmitTicket] = useState(false);
+  const [ticketStatus, setTicketStatus] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [submittingTicket, setSubmittingTicket] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
+    console.log('Coalition page loaded, user:', user);
+    if (!user) {
+      setError('Вы должны быть авторизованы');
+      setLoading(false);
+      return;
+    }
     fetchQuestions();
-  }, []);
+    checkCompletion();
+  }, [user]);
+
+  useEffect(() => {
+    checkCompletion();
+  }, [submitted]);
 
   const fetchQuestions = async () => {
     try {
+      console.log('Fetching questions...');
       const response = await questionsAPI.getAll();
+      console.log('Questions loaded:', response.data.length, 'questions');
       setQuestions(response.data);
 
-      // Load user's existing answers
+      let loadedAnswers = 0;
       response.data.forEach(async (q) => {
         try {
           const answer = await answersAPI.getAnswer(q._id);
           if (answer.data) {
+            console.log('✅ Loaded answer for question:', q.title);
             setSubmitted(prev => ({ ...prev, [q._id]: true }));
             setAnswers(prev => ({ ...prev, [q._id]: answer.data.answer }));
+            loadedAnswers++;
           }
         } catch (err) {
-          // No answer yet
+          console.log('ℹ️ No answer yet for:', q.title);
         }
       });
+      
+      console.log('Total answers to load:', loadedAnswers);
     } catch (error) {
       console.error('Failed to fetch questions:', error);
+      setError('Ошибка при загрузке вопросов');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const checkCompletion = async () => {
+    try {
+      const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+      console.log('Checking completion with token:', token?.substring(0, 20) + '...');
+      const response = await fetch('http://localhost:5000/api/answers/check-completion', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await response.json();
+      console.log('Completion check result:', data);
+      setAllAnswered(data.allAnswered);
+      setCanSubmitTicket(data.canSubmit);
+      setTicketStatus(data.ticketStatus);
+    } catch (error) {
+      console.error('Failed to check completion:', error);
     }
   };
 
@@ -59,9 +99,36 @@ const Coalition = () => {
         answer: answers[questionId],
       });
       setSubmitted(prev => ({ ...prev, [questionId]: true }));
-      alert('✅ Ответ отправлен!');
     } catch (error) {
       alert(error.response?.data?.message || 'Ошибка при отправке');
+    }
+  };
+
+  const handleSubmitTicket = async () => {
+    setSubmittingTicket(true);
+    try {
+      const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/answers/submit-ticket', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+      });
+      const data = await response.json();
+      
+      if (!response.ok) {
+        alert(data.message || 'Ошибка при отправке тикета');
+        return;
+      }
+
+      setTicketStatus('pending');
+      alert('✅ Ваша заявка отправлена на проверку администраторам!');
+    } catch (error) {
+      console.error('Failed to submit ticket:', error);
+      alert('Ошибка при отправке тикета');
+    } finally {
+      setSubmittingTicket(false);
     }
   };
 
@@ -70,6 +137,28 @@ const Coalition = () => {
       <div className="loading-container">
         <div className="spinner"></div>
         <p>Загрузка вопросов...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="coalition-page">
+        <div className="empty-state">
+          <h2>❌ Ошибка</h2>
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="coalition-page">
+        <div className="empty-state">
+          <h2>❌ Требуется авторизация</h2>
+          <p>Пожалуйста, авторизуйтесь для участия в коалиции</p>
+        </div>
       </div>
     );
   }
@@ -85,7 +174,14 @@ const Coalition = () => {
     );
   }
 
-  const allAnswered = questions.every(q => submitted[q._id]);
+  const questionsAnswered = Object.keys(submitted).length;
+
+  console.log('Coalition render state:');
+  console.log('- Questions total:', questions.length);
+  console.log('- Answers submitted:', questionsAnswered);
+  console.log('- All answered:', allAnswered);
+  console.log('- Can submit ticket:', canSubmitTicket);
+  console.log('- Ticket status:', ticketStatus);
 
   return (
     <div className="coalition-page">
@@ -97,11 +193,11 @@ const Coalition = () => {
         <div className="progress-bar">
           <div 
             className="progress-fill"
-            style={{ width: `${(Object.keys(submitted).length / questions.length) * 100}%` }}
+            style={{ width: `${(questionsAnswered / questions.length) * 100}%` }}
           ></div>
         </div>
         <p className="progress-text">
-          Вы ответили на {Object.keys(submitted).length} из {questions.length} вопросов
+          Вы ответили на {questionsAnswered} из {questions.length} вопросов
         </p>
 
         <div className="questions-carousel">
@@ -173,9 +269,45 @@ const Coalition = () => {
         </div>
 
         {allAnswered && (
+          <div style={{ marginTop: '20px' }}>
+            <p style={{ textAlign: 'center', fontSize: '14px', color: '#aaa' }}>
+              ✅ Вы ответили на все вопросы!
+            </p>
+            {ticketStatus === 'pending' ? (
+              <div className="status-banner status-pending">
+                <AlertCircle size={24} />
+                <div>
+                  <strong>⏳ Ваша заявка уже отправлена</strong>
+                  <p>Идет рассмотрение вашей заявки</p>
+                </div>
+              </div>
+            ) : ticketStatus === 'rejected' ? (
+              <button
+                onClick={handleSubmitTicket}
+                disabled={submittingTicket}
+                className="submit-ticket-btn"
+              >
+                {submittingTicket ? 'Повторная отправка...' : '🎫 Переотправить заявку'}
+              </button>
+            ) : (
+              <button
+                onClick={handleSubmitTicket}
+                disabled={submittingTicket}
+                className="submit-ticket-btn"
+              >
+                {submittingTicket ? 'Отправка...' : '🎫 Отправить на проверку'}
+              </button>
+            )}
+          </div>
+        )}
+
+        {ticketStatus === 'approved' && (
           <div className="success-banner">
-            <h3>✨ Спасибо! ✨</h3>
-            <p>Вы ответили на все вопросы. Администраторы рассмотрят вашу кандидатуру.</p>
+            <h3>✨ Добро пожаловать! ✨</h3>
+            <p>Присоединяйтесь к нашему серверу Discord и начните приключение!</p>
+            <a href={import.meta.env.VITE_DISCORD_INVITE || 'https://discord.gg/PBWchXqEP5'} className="discord-link" target="_blank" rel="noopener noreferrer">
+              Перейти на Discord Сервер
+            </a>
           </div>
         )}
       </div>

@@ -10,7 +10,7 @@ import News from './pages/News';
 import AdminPanel from './pages/AdminPanel';
 import './styles/globals.css';
 
-function App() {
+function AppContent() {
   const { user, loading } = useContext(AuthContext);
 
   if (loading) {
@@ -35,7 +35,7 @@ function App() {
   }
 
   return (
-    <Router>
+    <>
       {user && <Navigation />}
       <Routes>
         {/* Auth Routes */}
@@ -47,10 +47,15 @@ function App() {
         <Route path="/coalition" element={user ? <Coalition /> : <Navigate to="/login" />} />
         <Route path="/news" element={user ? <News /> : <Navigate to="/login" />} />
         <Route path="/admin" element={user ? <AdminPanel /> : <Navigate to="/login" />} />
-
-        {/* Fallback */}
-        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }

@@ -69,6 +69,24 @@ const Home = () => {
           Начать → 
         </a>
       </div>
+
+      <div className="social-section">
+        <h2 className="social-title">Следи за нами в соцсетях</h2>
+        <div className="social-links">
+          <a href="https://discord.gg/PBWchXqEP5" target="_blank" rel="noopener noreferrer" className="social-link discord">
+            <span className="social-icon">💜</span>
+            <span>Discord</span>
+          </a>
+          <a href="https://www.youtube.com/@CoolsM47/shorts" target="_blank" rel="noopener noreferrer" className="social-link youtube">
+            <span className="social-icon">📺</span>
+            <span>YouTube</span>
+          </a>
+          <a href="https://t.me/Workshop47MC" target="_blank" rel="noopener noreferrer" className="social-link telegram">
+            <span className="social-icon">📱</span>
+            <span>Telegram</span>
+          </a>
+        </div>
+      </div>
     </div>
   );
 };

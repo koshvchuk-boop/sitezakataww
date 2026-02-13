@@ -23,7 +23,7 @@ const Navigation = () => {
     <nav className="navbar">
       <div className="nav-container">
         <div className="nav-logo" onClick={() => handleNavClick('/')}>
-          <span className="neon-glow">⚡ COALITION</span>
+          <span className="neon-glow">⚡ КОАЛИЦИЯ ЗАКАТ</span>
         </div>
 
         <button 
@@ -50,13 +50,13 @@ const Navigation = () => {
               </button>
               <button 
                 className="nav-link"
-                onClick={() => window.open('https://youtube.com', '_blank')}
+                onClick={() => window.open('https://www.youtube.com/@CoolsM47/shorts', '_blank')}
               >
                 🎥 YouTube
               </button>
               <button 
                 className="nav-link"
-                onClick={() => window.open('https://t.me', '_blank')}
+                onClick={() => window.open('https://t.me/Workshop47MC', '_blank')}
               >
                 💬 Telegram
               </button>

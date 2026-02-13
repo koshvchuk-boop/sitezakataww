@@ -6,7 +6,7 @@ const API = axios.create({
 
 // Add token to requests
 API.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('authToken') || localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -32,6 +32,14 @@ export const answersAPI = {
   submit: (data) => API.post('/answers', data),
   getMyAnswers: () => API.get('/answers/user/my-answers'),
   getAnswer: (questionId) => API.get(`/answers/question/${questionId}`),
+};
+
+export const newsAPI = {
+  getAll: () => API.get('/news'),
+  getOne: (id) => API.get(`/news/${id}`),
+  create: (data) => API.post('/news', data),
+  update: (id, data) => API.patch(`/news/${id}`, data),
+  delete: (id) => API.delete(`/news/${id}`),
 };
 
 export default API;
